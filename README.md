@@ -17,6 +17,7 @@ A collection of re-usable scripts for [Adam Le Doux](https://twitter.com/adamled
  - 💬 [dialog pause](/dist/dialog-pause.js): add pauses in between printing text
  - 🔝 [direction in dialog](/dist/direction-in-dialog.js): provides a variable with player direction
  - ↔ [directional avatar](/dist/directional-avatar.js): flips the player's sprite based on directional movement
+ - ↔ [dungeonHack](/dist/dungeonHack.js): dungeon stuff
  - 🖼 [dynamic background](/dist/dynamic-background.js): HTML background matching bitsy background
  - 📝 [edit dialog from dialog](/dist/edit-dialog-from-dialog.js): edit dialog from dialog (yes really)
  - 🖌 [edit image from dialog](/dist/edit-image-from-dialog.js): edit sprites, items, and tiles from dialog
