@@ -18,12 +18,14 @@ import {
 } from "./helpers/kitsy-script-toolkit";
 
 export var hackOptions = {
+    // area of the map on screen
     mapArea: {
         x: 1,
         y: 8,
         w: 14,
         h: 7,
     },
+    // special tile names
     mapTileNames: {
         room: "mapRoom",
         boss: "mapBoss",
@@ -34,9 +36,11 @@ export var hackOptions = {
         doorE: "doorE",
         wall: "roomWall",
     },
+    // special item names
     mapItemNames: {
         cursor: "mapCursor",
     },
+    // postiions of doors on screen, and direction of exit (delta)
     roomExits: [
         {x: 3, y: 1, tileName: "doorN", delta: {x: 0, y: -1}},
         {x: 3, y: 5, tileName: "doorS", delta: {x: 0, y: 1}},
@@ -101,7 +105,41 @@ after("load_game", function() {
 
 before("update", function() {
     let plr = sprite[playerId];
+    let ch = prevPlayerPos.x != plr.x || prevPlayerPos.y != plr.y;
     prevPlayerPos = {x: plr.x, y: plr.y};
+
+    // update mobs
+    if(ch) {
+        // filter all sprites by name to get list of mobs
+        Object.keys(sprite).map(key => sprite[key])
+        .filter(spr => (spr && spr.name && spr.name.startsWith("mob")))
+        // .sort()
+        .forEach(function(spr) {
+            // get relative position of player
+            let dx = (plr.x - spr.x);
+            let dy = (plr.y - spr.y);
+            // don't move if directly next to player
+            if(Math.abs(dx) + Math.abs(dy) > 1) {
+                // "sca;e" relative position to step vector
+                dx = Math.sign(dx);
+                dy = Math.sign(dy);
+                // if movement is axis aligned move in that direction
+                if(dx != 0 && dy == 0) {
+                    spr.x += dx;
+                } 
+                else if(dy != 0 && dx == 0) {
+                    spr.y += dy;
+                }
+                // otherwise chose the axis randomly
+                else if(Math.random() < 0.5) {
+                    spr.x += dx;
+                } 
+                else {
+                    spr.y += dy;
+                }
+            }
+        });
+    }
 });
 
 // injection to get hook into room change
@@ -113,6 +151,7 @@ function onRoomChange() {
 
     // figure out transition direction, move the map cursor
     let plr = sprite[playerId];
+    // if this ever breaks we can probably detect the move direction in other ways, or get it from the door info
     let moveDir = {x: plr.x - prevPlayerPos.x, y: plr.y - prevPlayerPos.y};
     dungeon.curPos.x += -Math.sign(moveDir.x);
     dungeon.curPos.y += -Math.sign(moveDir.y);
